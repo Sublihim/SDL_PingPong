@@ -3,6 +3,20 @@
 #include "Dbg.h"
 #include <iostream>
 
+// Вспомогательные ф-ции
+static inline int calcXEnd(const SDL_Point& p_first, const SDL_Point& p_second, int endY)
+{
+    const int v1 = (p_second.x * p_first.y - p_first.x * p_second.y);
+        const int v2 = endY * (p_second.x - p_first.x);
+        const int delim = (p_first.y - p_second.y);
+        int endX = ( v1 - v2 ) / delim;
+
+        std::cout << "e_x: (" << v1 << " - " << v2 << ") / " << delim << std::endl;
+
+        return endX;
+}
+
+// класс BallMgr
 BallMgr::BallMgr(int radius)
 {
     srand(time(NULL));
@@ -48,35 +62,22 @@ void BallMgr::reinit()
 
 void BallMgr::updateLinePath(SDL_Point p_first, SDL_Point p_second)
 {
-    Dbg::PrintDoublePoint(p_first, p_second);
+    Dbg::PrintDoublePoint(p_first, p_second, "in updateLinePath");
     // Обновляем направляющую шарик линию
     if(p_first.y != p_second.y) // Избегаем деление на ноль
     {
         SDL_Point p_end_line;
-        if(p_second.y > p_first.y)
-            p_end_line.y = SCREEN_HEIGHT; // Идем вниз
-        else p_end_line.y = 0; // Идем вверх
+        // SCREEN_HEIGHT - идем вниз, 0 - идем вверх
+        p_end_line.y = (p_second.y > p_first.y) ? SCREEN_HEIGHT : 0;
 
-        // Проверяем на "плохие" углы отражения
-        // близкие прямой линии
         Dbg::PrintAbs(p_first, p_second, *ball);
-        if(abs(p_second.y - p_first.y) <= ball->getRadius())
-        {
-            float k_chg_angle;
-            if(p_second.x < SCREEN_WIDTH / 2)
-                k_chg_angle = 0.2;
-            else k_chg_angle = -0.2;
 
-            p_second.x += ball->getRadius() * k_chg_angle;
-        }
+        p_end_line.x = calcXEnd(p_first, p_second, p_end_line.y);
 
-        int v1 = (p_second.x * p_first.y - p_first.x * p_second.y);
-        int v2 = p_end_line.y * (p_second.x - p_first.x);
-        int delim = (p_first.y - p_second.y);
-        p_end_line.x = ( v1 - v2 ) / delim;
+        Dbg::PrintTriplePoint(p_first, p_second, p_end_line, "after calc endX");
 
-        Dbg::PrintTriplePoint(p_first, p_second, p_end_line);
-        std::cout << "e_x: (" << v1 << " - " << v2 << ") / " << delim << std::endl;
+
+        correctPoint(p_first, p_end_line);
         // Генерируем путь движения
         genLinePath(p_first.x, p_first.y, p_end_line.x, p_end_line.y);
 
@@ -89,6 +90,29 @@ void BallMgr::updateLinePath(SDL_Point p_first, SDL_Point p_second)
         reinit();
     }
 }
+
+void BallMgr::correctPoint(SDL_Point& p_first, SDL_Point& p_end_line)
+{
+    const int ballRadius = ball->getRadius();
+
+    // Если отклонение по x меньше радуса
+    if (abs(p_first.x - p_end_line.x) <= ballRadius)
+    {
+        if (p_first.x > p_end_line.x)
+            p_end_line.x -= ballRadius;
+        else if(p_first.x <= p_end_line.x)
+            p_end_line.x += ballRadius;
+    }
+
+        // Если отклонение по x меньше радуса
+    if (abs(p_first.y - p_end_line.y) <= ballRadius)
+    {
+        if (p_first.y > p_end_line.y)
+            p_end_line.y -= ballRadius;
+        else if(p_first.y <= p_end_line.y)
+            p_end_line.y += ballRadius;
+    }
+};
 
 void BallMgr::genLinePath(int x1, int y1, int x2, int y2)
 {
@@ -180,6 +204,7 @@ void BallMgr::flipVertically()
     SDL_Point p_second;
     p_second.x = linePath[0].x;
     p_second.y = linePath[0].y + 2 * (linePath[linePath_iter].y - linePath[0].y);
+
     updateLinePath(linePath[linePath_iter], p_second);
 
     /*
@@ -201,6 +226,7 @@ void BallMgr::flipHorizontally()
     SDL_Point p_second;
     p_second.x = linePath[0].x + 2 * (linePath[linePath_iter].x - linePath[0].x);
     p_second.y = linePath[0].y;
+
     updateLinePath(linePath[linePath_iter], p_second);
 }
 

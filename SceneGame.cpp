@@ -47,7 +47,7 @@ void SceneGame::render(SDL_Renderer *renderer)
 
     SDL_RenderPresent(renderer);
 
-    SDL_Delay(25);
+    SDL_Delay(15);
 }
 
 void SceneGame::render_clean(SDL_Renderer *renderer)

@@ -28,6 +28,7 @@ public:
     void flipHorizontally();
     bool checkCollisionWithScreen();
     void checkCollisionWithRect(RectMgr *rect);
+    void correctPoint(SDL_Point& p_first, SDL_Point& p_end_line);
 };
 
 
