@@ -32,14 +32,14 @@ void SceneGame::render(SDL_Renderer *renderer)
     }
 
 
-    // Просчитываем столкновения
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     ballmgr->checkCollisionWithRect(rectUp);
     ballmgr->checkCollisionWithRect(rectDown);
 
-    // Очищаем экран от текущих объектов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     render_clean(renderer);
 
-    // Рисуем новые
+    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     rectUp->draw(renderer);
     rectDown->draw(renderer);
     ballmgr->draw(renderer);
@@ -47,12 +47,12 @@ void SceneGame::render(SDL_Renderer *renderer)
 
     SDL_RenderPresent(renderer);
 
-    SDL_Delay(5);
+    SDL_Delay(25);
 }
 
 void SceneGame::render_clean(SDL_Renderer *renderer)
 {
-    // Стираем текущие объекты сцены
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     rectUp->draw(renderer, true);
     rectDown->draw(renderer, true);
     ballmgr->draw(renderer, true);
@@ -60,8 +60,8 @@ void SceneGame::render_clean(SDL_Renderer *renderer)
 
 void SceneGame::process_mouse_motion(Sint32 x, Sint32 y)
 {
-    // Управляем движением ракеток
-    // Чтобы ракетка не ушла за экран
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     if( x + rect_w/2 > SCREEN_WIDTH)
         x = SCREEN_WIDTH - rect_w/2;
 

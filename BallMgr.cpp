@@ -1,4 +1,6 @@
+#include <iostream>
 #include "BallMgr.h"
+#include "Dbg.h"
 
 BallMgr::BallMgr(int radius)
 {
@@ -45,6 +47,7 @@ void BallMgr::reinit()
 
 void BallMgr::updateLinePath(SDL_Point p_first, SDL_Point p_second)
 {
+    Dbg::PrintPoint(p_first);
     // Обновляем направляющую шарик линию
     if(p_first.y != p_second.y) // Избегаем деление на ноль
     {
@@ -105,6 +108,22 @@ void BallMgr::genLinePath(int x1, int y1, int x2, int y2)
             error += deltaX;
             y1 += signY;
         }
+    }
+
+    int firstX = linePath[0].x;
+    bool isXEaual = true;
+    for (auto point : linePath)
+    {
+        if (firstX != point.x)
+        {
+            isXEaual = false;
+            break;
+        }
+    }
+
+    if (isXEaual)
+    {
+        std::cout << "isEqual" << std::endl;
     }
 }
 
