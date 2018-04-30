@@ -5,3 +5,4 @@
 *.o
 res
 *.json
+debug/
