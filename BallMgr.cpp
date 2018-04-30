@@ -48,7 +48,7 @@ void BallMgr::reinit()
 
 void BallMgr::updateLinePath(SDL_Point p_first, SDL_Point p_second)
 {
-    Dbg::PrintPoint(p_first);
+    Dbg::PrintDoublePoint(p_first, p_second);
     // Обновляем направляющую шарик линию
     if(p_first.y != p_second.y) // Избегаем деление на ноль
     {
@@ -59,7 +59,7 @@ void BallMgr::updateLinePath(SDL_Point p_first, SDL_Point p_second)
 
         // Проверяем на "плохие" углы отражения
         // близкие прямой линии
-        std::cout << abs(p_second.y - p_first.y) << " <= " << ball->getRadius() << std::endl;
+        Dbg::PrintAbs(p_first, p_second, *ball);
         if(abs(p_second.y - p_first.y) <= ball->getRadius())
         {
             float k_chg_angle;
@@ -70,11 +70,13 @@ void BallMgr::updateLinePath(SDL_Point p_first, SDL_Point p_second)
             p_second.x += ball->getRadius() * k_chg_angle;
         }
 
-        p_end_line.x = ( (p_second.x * p_first.y - p_first.x * p_second.y) - p_end_line.y * (p_second.x - p_first.x) )
-                        / (p_first.y - p_second.y);
+        int v1 = (p_second.x * p_first.y - p_first.x * p_second.y);
+        int v2 = p_end_line.y * (p_second.x - p_first.x);
+        int delim = (p_first.y - p_second.y);
+        p_end_line.x = ( v1 - v2 ) / delim;
 
-        std::cout << "f_x: " << p_first.x << " f_y: " << p_first.y << " s_x: " << p_second.x << " s_y: " << p_second.y << " e_x: " << p_end_line.x << " e_y: " << p_end_line.y << std::endl;
-        std::cout << "e_x: (" << (p_second.x * p_first.y - p_first.x * p_second.y) << " - " << p_end_line.y * (p_second.x - p_first.x) << ") / " << (p_first.y - p_second.y) << std::endl;
+        Dbg::PrintTriplePoint(p_first, p_second, p_end_line);
+        std::cout << "e_x: (" << v1 << " - " << v2 << ") / " << delim << std::endl;
         // Генерируем путь движения
         genLinePath(p_first.x, p_first.y, p_end_line.x, p_end_line.y);
 
