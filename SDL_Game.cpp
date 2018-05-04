@@ -8,6 +8,16 @@ SDL_Game::SDL_Game()
 	renderer = NULL;
 }
 
+SDL_Game::~SDL_Game()
+{
+    delete s_mgr;
+    SDL_DestroyWindow( window ); // Уничтожаем окно
+    TTF_Quit(); // Отключаем библиотеку SDL_ttf
+    Mix_CloseAudio(); // Закрываем аудио
+    SDL_Quit(); //Выход из SDL
+    std::cout << "SDL_Game end\n";
+}
+
 bool SDL_Game::init(const char* title, int xpos, int ypos,
               int height, int width, int flags)
 {
@@ -53,13 +63,7 @@ int SDL_Game::process_events()
         switch(event.type)
         {
         case SDL_KEYDOWN: // Нажали клавишу на клавиатуре
-            /*if (event.key.keysym.sym == SDLK_LEFT)
-                ScrObjMngr.ChgXBegin(-RectStepByKeyboard);
-
-            if (event.key.keysym.sym == SDLK_RIGHT)
-                ScrObjMngr.ChgXBegin(RectStepByKeyboard);
-            */
-            gr = s_mgr->process_keyboard_keydown(event.key.keysym.sym);//SDLK_ESCAPE
+            gr = s_mgr->process_keyboard_keydown(event.key.keysym.sym);
             break;
         case SDL_MOUSEMOTION: // Движение мышкой
             gr = s_mgr->process_mouse_motion(event.motion.x, event.motion.y);
@@ -68,7 +72,7 @@ int SDL_Game::process_events()
             gr = s_mgr->process_mouse_button_event(event.button);
             break;
         case SDL_QUIT: // Закрыли окно
-            ret = 0;
+            gr = gameReaction::gr_exit;
             break;
         default:
             break;
@@ -84,14 +88,6 @@ int SDL_Game::process_events()
 void SDL_Game::render()
 {
     s_mgr->render(renderer);
-}
-
-void SDL_Game::clean_and_exit()
-{
-    SDL_DestroyWindow( window ); // Уничтожаем окно
-    TTF_Quit(); // Отключаем библиотеку SDL_ttf
-	SDL_Quit(); //Выход из SDL
-    Mix_CloseAudio(); // Закрываем аудио
 }
 
 std::string SDL_Game::getErrorMsg()
